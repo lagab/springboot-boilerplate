@@ -14,6 +14,13 @@ spring:
     show-sql: true
   thymeleaf:
     cache: false
+  servlet:
+    multipart:
+      max-file-size: 128KB
+      max-request-size: 128KB
+  http:
+    multipart:
+      enabled: false
 application:
   security:
     authentication:
@@ -25,3 +32,5 @@ application:
   mail: # specific mail property, for standard properties see MailProperties
     from: boilerplate@localhost
     base-url: http://localhost:8080
+  storage:
+    upload-dir: W:/Dev/spring-boilerplate/
