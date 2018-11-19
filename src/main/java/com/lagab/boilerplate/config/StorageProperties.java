@@ -1,5 +1,6 @@
 package com.lagab.boilerplate.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,20 +9,20 @@ import org.springframework.context.annotation.Configuration;
  * @since 16/11/2018.
  */
 @Configuration
-@ConfigurationProperties("application.storage")
+@ConfigurationProperties(prefix ="application.storage",ignoreUnknownFields = true)
 public class StorageProperties {
 
     /**
      * Folder location for storing files
      */
-    private String location = "upload-dir";
+    private String uploadDir;
 
-    public String getLocation() {
-        return location;
+    public String getUploadDir() {
+        return uploadDir;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setUploadDir(String uploadDir) {
+        this.uploadDir = uploadDir;
     }
 
 }
