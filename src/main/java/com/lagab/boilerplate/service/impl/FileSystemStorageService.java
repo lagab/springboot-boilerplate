@@ -1,6 +1,7 @@
 package com.lagab.boilerplate.service.impl;
 
 import com.lagab.boilerplate.config.StorageProperties;
+import com.lagab.boilerplate.errors.DuplicateDirectoryException;
 import com.lagab.boilerplate.errors.StorageException;
 import com.lagab.boilerplate.errors.StorageFileNotFoundException;
 import com.lagab.boilerplate.service.StorageService;
@@ -89,6 +90,17 @@ public class FileSystemStorageService implements StorageService{
             Files.createDirectory(rootLocation);
         } catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
+        }
+    }
+
+    @Override
+    public void addDirectory(String dirName) throws IOException {
+        Path dir = Paths.get(this.rootLocation.toString()+dirName);
+        boolean dirExists = Files.exists(dir) && Files.isDirectory(dir);
+        if(dirExists ){
+            throw new DuplicateDirectoryException("Directory already Exist: "+dirName);
+        }else{
+            Files.createDirectories(dir);
         }
     }
 }

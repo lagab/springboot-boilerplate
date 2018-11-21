@@ -68,7 +68,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="entity_value" type="LONGTEXT"/>
-            <column name="version" type="INT"/>
+            <column name="commit_version" type="INT"/>
             <column name="modified_by" type="VARCHAR(100)"/>
             <column name="modified_date" type="timestamp">
                 <constraints nullable="false"/>
