@@ -24,7 +24,7 @@ class Scenario extends Simulation {
 
   //Run Scenario
   setUp(
-    Test1.scn.inject(rampUsers(5) during(1 minutes)),
+    Authentication.scn.inject(rampUsers(5) during(1 minutes)),
 
   ).protocols(httpProtocol)
 }

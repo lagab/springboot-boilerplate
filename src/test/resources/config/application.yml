@@ -41,5 +41,7 @@ application:
   mail:
     from: test@localhost
     base-url: http://127.0.0.1:8080
+  storage:
+    upload-dir: W:/Dev/spring-boilerplate
 # Properties to be exposed on the /info management endpoint
 #info:

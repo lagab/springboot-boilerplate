@@ -44,9 +44,24 @@
 
         <gatling.version>3.0.1</gatling.version>
         <gatling-plugin.version>3.0.1</gatling-plugin.version>
-
+        <gatling-profile-env></gatling-profile-env>
 
     </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <gatling-profile-env></gatling-profile-env>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <gatling-profile-env>Prd</gatling-profile-env>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <!--<dependency>
@@ -239,15 +254,8 @@
                     <configFolder>${project.basedir}/src/test/resources/gatling/config</configFolder>
                     <dataFolder>${project.basedir}/src/test/resources/gatling/data</dataFolder>
                     <simulationsFolder>${project.basedir}/src/test/scala</simulationsFolder>
-                    <simulationClass>com.lagab.boilerplate.simulations.Scenario</simulationClass>
+                    <simulationClass>com.lagab.boilerplate.simulations.Scenario${gatling-profile-env}</simulationClass>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
         </plugins>
