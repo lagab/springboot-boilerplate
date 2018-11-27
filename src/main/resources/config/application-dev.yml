@@ -33,4 +33,6 @@ application:
     from: boilerplate@localhost
     base-url: http://localhost:8080
   storage:
-    upload-dir: W:/Dev/spring-boilerplate/
+    upload-dir: W:/Dev/spring-boilerplate
+server:
+  port: 8081

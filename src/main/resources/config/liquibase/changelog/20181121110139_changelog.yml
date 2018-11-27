@@ -1,0 +1,198 @@
+databaseChangeLog:
+- changeSet:
+    id: 1542798105343-1
+    author: gabriel (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: dl_filePK
+            name: id
+            type: BIGINT
+        - column:
+            name: uuid
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: folder_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: mime_type
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: path
+            type: VARCHAR(255)
+        - column:
+            name: read_count
+            type: INT
+        - column:
+            name: size
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: file_name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: created_at
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: modified_at
+            type: TIMESTAMP
+        - column:
+            name: modified_by
+            type: VARCHAR(50)
+        - column:
+            name: description
+            type: VARCHAR(255)
+        tableName: dl_file
+- changeSet:
+    id: 1542798105343-2
+    author: gabriel (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: dl_folderPK
+            name: id
+            type: BIGINT
+        - column:
+            name: uuid
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: repository_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: parentfolder_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: path
+            type: VARCHAR(255)
+        - column:
+            name: mount_point
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            name: created_at
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: modified_at
+            type: TIMESTAMP
+        - column:
+            name: modified_by
+            type: VARCHAR(50)
+        - column:
+            name: description
+            type: VARCHAR(255)
+        tableName: dl_folder
+- changeSet:
+    id: 1542798105343-3
+    author: gabriel (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: dl_repositoryPK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: created_at
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: modified_at
+            type: TIMESTAMP
+        - column:
+            name: modified_by
+            type: VARCHAR(50)
+        - column:
+            name: description
+            type: VARCHAR(255)
+        tableName: dl_repository
+- changeSet:
+    id: 1542798105343-4
+    author: gabriel (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: folder_id
+        baseTableName: dl_file
+        constraintName: FK3kkepa56un20n5ct4pqcmjnsr
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: dl_folder
+- changeSet:
+    id: 1542798105343-5
+    author: gabriel (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: parentfolder_id
+        baseTableName: dl_folder
+        constraintName: FK8hyb2gd7w122n3k82hqcg7bnr
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: dl_folder
+- changeSet:
+    id: 1542798105343-6
+    author: gabriel (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: repository_id
+        baseTableName: dl_folder
+        constraintName: FK92pebxm7wv2rv6qyv58dlmfg3
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: dl_repository
+

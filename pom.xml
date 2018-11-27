@@ -129,6 +129,11 @@
             <artifactId>problem-spring-web</artifactId>
             <version>${zalando-problem.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.uuid</groupId>
+            <artifactId>java-uuid-generator</artifactId>
+            <version>3.1.5</version>
+        </dependency>
 
 
         <!-- swagger -->
