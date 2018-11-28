@@ -40,6 +40,7 @@ public class DLFile extends AbstractAuditingEntity implements Serializable {
         this.uuid = uuid.toString();
     }
 
+    @Column(name = "uuid",nullable = false,unique = true)
     public String getUuid() {
         return uuid;
     }

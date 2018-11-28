@@ -1,0 +1,14 @@
+databaseChangeLog:
+- changeSet:
+    id: 1543394893223-1
+    author: gabriel (generated)
+    changes:
+    - addNotNullConstraint:
+        columnDataType: varchar(255)
+        columnName: uuid
+        tableName: dl_folder
+    - addNotNullConstraint:
+        columnDataType: varchar(255)
+        columnName: uuid
+        tableName: dl_file
+

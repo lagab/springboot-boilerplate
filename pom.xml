@@ -257,7 +257,6 @@
                 <version>${gatling-plugin.version}</version>
                 <configuration>
                     <configFolder>${project.basedir}/src/test/resources/gatling/config</configFolder>
-                    <dataFolder>${project.basedir}/src/test/resources/gatling/data</dataFolder>
                     <simulationsFolder>${project.basedir}/src/test/scala</simulationsFolder>
                     <simulationClass>com.lagab.boilerplate.simulations.Scenario${gatling-profile-env}</simulationClass>
                 </configuration>

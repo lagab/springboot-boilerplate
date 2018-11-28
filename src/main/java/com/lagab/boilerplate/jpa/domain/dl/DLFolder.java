@@ -37,7 +37,7 @@ public class DLFolder extends AbstractAuditingEntity implements Serializable {
         this.uuid = uuid.toString();
     }
 
-    @Column(name = "uuid",nullable = false)
+    @Column(name = "uuid",nullable = false,unique = true)
     public String getUuid() {
         return uuid;
     }
