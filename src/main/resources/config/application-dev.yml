@@ -36,3 +36,5 @@ application:
     upload-dir: W:/Dev/spring-boilerplate
 server:
   port: 8081
+  tomcat:
+    ajp-port: 7001
