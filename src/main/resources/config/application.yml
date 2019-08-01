@@ -8,6 +8,8 @@
 server:
   servlet:
     context-path: {{ BOILERPLATE_CONTEXT_PATH }}
+  tomcat:
+    ajp-port: {{ BOILERPLATE_AJP_PORT }}
 spring:
   application:
     name: BOILERPLATE_APPLICATION_NAME
