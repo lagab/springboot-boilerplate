@@ -29,6 +29,9 @@ spring:
       enabled: false
   thymeleaf:
     mode: HTML
+server:
+  tomcat:
+    ajp-port: 7001
 # Application properties
 application:
   security:
