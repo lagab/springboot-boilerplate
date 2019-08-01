@@ -11,6 +11,7 @@ import com.lagab.boilerplate.utils.security.SecurityUtils;
 import com.lagab.boilerplate.web.rest.vm.KeyAndPasswordVM;
 import com.lagab.boilerplate.web.rest.vm.ManagedUserVM;
 import io.micrometer.core.annotation.Timed;
+import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import java.util.Optional;
  * @author gabriel
  * @since 15/11/2018.
  */
+@Api(tags = "Account Controller")
 @RestController
 @RequestMapping("/account")
 public class AccountResource {
