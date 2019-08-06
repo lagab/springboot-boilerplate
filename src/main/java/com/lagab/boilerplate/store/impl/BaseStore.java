@@ -52,7 +52,7 @@ public abstract class BaseStore implements Store{
 
     @Override
     public String getTempPath(String path) {
-        return getTempPath() + StringConstants.SLASH +  path;
+        return getTempPath() + ( path.startsWith(StringConstants.SLASH) ? StringConstants.BLANK :StringConstants.SLASH ) +  path;
     }
 
     @Override

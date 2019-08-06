@@ -1,6 +1,7 @@
 package com.lagab.boilerplate.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Set;
  * <p>
  * Properties are configured in the application.yml file.
  */
+@Configuration
 @ConfigurationProperties(prefix = "application.store", ignoreUnknownFields = true)
 public class StorageProperties {
 

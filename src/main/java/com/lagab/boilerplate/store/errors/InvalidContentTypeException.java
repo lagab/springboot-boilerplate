@@ -1,6 +1,6 @@
 package com.lagab.boilerplate.store.errors;
 
-import com.lagab.cmanager.web.rest.errors.SystemException;
+import com.lagab.boilerplate.errors.SystemException;
 
 /**
  * @author gabriel
