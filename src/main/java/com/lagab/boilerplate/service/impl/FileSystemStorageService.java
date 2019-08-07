@@ -1,39 +1,139 @@
 package com.lagab.boilerplate.service.impl;
 
-import com.lagab.boilerplate.config.StorageProperties;
-import com.lagab.boilerplate.errors.DuplicateDirectoryException;
-import com.lagab.boilerplate.errors.StorageException;
-import com.lagab.boilerplate.errors.StorageFileNotFoundException;
+import com.lagab.boilerplate.errors.SystemException;
 import com.lagab.boilerplate.service.StorageService;
+import com.lagab.boilerplate.store.Store;
+import com.lagab.boilerplate.store.validator.FileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
+import java.util.Arrays;
 
 /**
  * @author gabriel
  * @since 16/11/2018.
  */
 @Service
-public class FileSystemStorageService implements StorageService{
+public class FileSystemStorageService implements StorageService {
 
-    private final Path rootLocation;
+    private final FileValidator fileValidator;
+
+    private  final Store store;
+
+    private String repository;
 
     @Autowired
-    public FileSystemStorageService(StorageProperties properties) {
-        this.rootLocation = Paths.get(properties.getUploadDir());
+    public FileSystemStorageService(Store store,FileValidator fileValidator) {
+        this.store = store;
+        this.fileValidator = fileValidator;
     }
 
     @Override
+    public String GetRepository() {
+        return repository;
+    }
+
+    @Override
+    public void setRepository(String repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public void addFile(String path, MultipartFile file, String fileName) throws IOException, SystemException {
+        fileValidator.validateFile(path,file);
+        this.addFile(path,file.getInputStream(),fileName);
+    }
+
+    @Override
+    public void addFile(String path, InputStream is, String fileName) throws SystemException {
+        store.addFile(path,is);
+    }
+
+    @Override
+    public void putFile(String path, MultipartFile file, String fileName) throws SystemException, IOException {
+        fileValidator.validateFile(path,file);
+        this.putFile(path,file.getInputStream(),fileName);
+    }
+    @Override
+    public void putFile(String path, InputStream is, String fileName) throws SystemException {
+        if( fileExist(path)){
+            store.updateFile(path,is);
+        }else{
+            store.addFile(path,is);
+        }
+    }
+
+    @Override
+    public InputStream loadFile(String path) throws SystemException {
+        return store.getFileAsStream(path);
+    }
+
+    @Override
+    public InputStream loadFile(Path path) throws SystemException {
+        return store.getFileAsStream(path.toString());
+    }
+
+    @Override
+    public File getFile(String path) throws SystemException {
+        return store.getFile(path);
+    }
+
+    @Override
+    public File getFile(Path path) throws SystemException {
+        return getFile(path.toString());
+    }
+
+    @Override
+    public void deleteFile(String path) throws SystemException {
+        store.deleteFile(path);
+    }
+
+    @Override
+    public void deleteFiles(String[] paths)  throws SystemException {
+        Arrays.stream(paths).forEach(path -> {
+            try {
+                this.deleteFile(path);
+            } catch (SystemException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public void deleteDirectory(String path) throws SystemException {
+        store.deleteDirectory(path);
+    }
+
+    @Override
+    public long getFileSize(String path) {
+        return store.getFileSize(path);
+    }
+
+    @Override
+    public boolean fileExist(String path) throws SystemException {
+        File file = store.getFile(path);
+        return file.exists() && file.isFile();
+    }
+
+    @Override
+    public boolean folderExist(String path) throws SystemException {
+        File file = store.getFile(path);
+        return file.exists() && file.isDirectory();
+    }
+
+    @Override
+    public boolean hasDirectory(String path) {
+        return store.hasDirectory(path);
+    }
+
+
+
+    /* @Override
     public void store(MultipartFile file) {
         try {
             if (file.isEmpty()) {
@@ -103,4 +203,5 @@ public class FileSystemStorageService implements StorageService{
             Files.createDirectories(dir);
         }
     }
+    */
 }

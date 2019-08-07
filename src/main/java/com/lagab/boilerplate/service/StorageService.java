@@ -1,13 +1,12 @@
 package com.lagab.boilerplate.service;
 
-import org.springframework.core.io.Resource;
+import com.lagab.boilerplate.errors.SystemException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
 /**
  * @author gabriel
@@ -15,44 +14,28 @@ import java.util.stream.Stream;
  */
 public interface StorageService {
 
-    void init();
+    String GetRepository();
+    void setRepository(String repository);
 
-    void store(MultipartFile file);
+    void addFile(String path,MultipartFile file, String fileName) throws IOException, SystemException;
+    void addFile(String path,InputStream is, String fileName) throws SystemException;
 
-    Stream<Path> loadAll();
+    void putFile(String path,MultipartFile file, String fileName) throws SystemException, IOException;
+    void putFile(String path,InputStream is, String fileName) throws SystemException;
 
-    Path load(String filename);
+    InputStream loadFile(String path) throws SystemException;
+    InputStream loadFile(Path path) throws SystemException;
+    File getFile(String path) throws SystemException;
+    File getFile(Path path) throws SystemException;
 
-    Resource loadAsResource(String filename);
+    void deleteFile(String path) throws SystemException;
+    void deleteFiles(String[] paths) throws SystemException;
+    void deleteDirectory(String path) throws SystemException;
 
-    void deleteAll();
+    long getFileSize(String path);
+    boolean fileExist(String path) throws SystemException;
+    boolean folderExist(String path) throws SystemException;
+    boolean hasDirectory(String path);
 
-    //TODO to implements
-
-    void addDirectory(String dirName) throws IOException;
-    /*void addDirectory(long repositoryId, String dirName);
-    void addFile(long repositoryId, String fileName, MultipartFile file);
-    void addFile(long repositoryId, String fileName, byte[] bytes);
-    void addFile(long repositoryId, String fileName, File file);
-    void addFile(long repositoryId, String fileName, InputStream is);
-    void deleteDirectory(long repositoryId, String dirName);
-    void deleteFile(long repositoryId, String fileName);
-    File getFile(long repositoryId, String fileName);
-    byte[] getFileAsBytes(long repositoryId, String fileName);
-    InputStream getFileAsStream(long repositoryId, String fileName);
-    String[] getFileNames(long repositoryId);
-    String[] getFileNames(long repositoryId, String dirName);
-    long getFileSize(long repositoryId, String fileName);
-    boolean hasDirectory(long repositoryId, String dirName);
-
-    void updateFile(long repositoryId, String fileName,String newFileName);
-
-    void updateFile(long repositoryId, String fileName,MultipartFile file);
-
-    void updateFile(long repositoryId, String fileName, byte[] bytes);
-
-    void updateFile(long repositoryId, String fileName, File file);
-
-    void updateFile(long repositoryId, String fileName, InputStream is);*/
 
 }
