@@ -23,7 +23,7 @@ public class FileSystemStore extends BaseStore {
     }
 
     protected File getDirNameDir(String path) {
-        return new File(path);
+        return Paths.get(path).toFile();
     }
 
     @Override
@@ -38,21 +38,28 @@ public class FileSystemStore extends BaseStore {
         catch (IOException ioe) {
             throw new SystemException(ioe);
         }
+        log.debug("add directory " + path);
     }
 
     @Override
     public void addFile(String path, InputStream is) throws SystemException {
-
+        File targetFile = Paths.get(path).toFile();
+        try {
+            FileUtils.copyInputStreamToFile(is, targetFile);
+        } catch (IOException e) {
+            throw new SystemException(e);
+        }
+        log.debug("add file " + path);
     }
 
     @Override
     public File getFile(String path) throws SystemException {
-        return null;
+        return Paths.get(path).toFile();
     }
 
     @Override
     public InputStream getFileAsStream(String path) throws SystemException {
-        File file = new File(path);
+        File file = getFile(path);
         try {
             return  FileUtils.openInputStream(file);
         } catch (IOException e) {
@@ -86,8 +93,8 @@ public class FileSystemStore extends BaseStore {
 
     @Override
     public void move(String srcDir, String destDir) throws SystemException {
-        File sourceFile = new File(getPath(srcDir));
-        File targetFile = new File(getPath(destDir));
+        File sourceFile = Paths.get(getPath(srcDir)).toFile();
+        File targetFile = Paths.get(getPath(destDir)).toFile();
         try {
             FileUtils.moveDirectory(sourceFile,targetFile);
         } catch (IOException e) {
@@ -97,8 +104,8 @@ public class FileSystemStore extends BaseStore {
 
     @Override
     public void move(String srcDir, String destDir, String fileName) throws SystemException {
-        File sourceFile = new File(getPath(srcDir,false) + StringConstants.SLASH + fileName);
-        File targetFile = new File(getPath(destDir,false));
+        File sourceFile = Paths.get(getPath(srcDir,false),fileName).toFile();
+        File targetFile = Paths.get(getPath(destDir,false)).toFile();
         try {
             FileUtils.moveFileToDirectory(sourceFile,targetFile,true);
             if(isEmptyDirectory( getPath(srcDir, false) )) {
@@ -117,6 +124,7 @@ public class FileSystemStore extends BaseStore {
         } catch (IOException e) {
             throw new SystemException(e);
         }
+        log.debug("update file " + path);
     }
 
     @Override
@@ -132,7 +140,7 @@ public class FileSystemStore extends BaseStore {
 
     @Override
     public void deleteFile(String path) throws SystemException {
-        File targetFile = new File(path);
+        File targetFile = Paths.get(path).toFile();
         FileUtils.deleteQuietly(targetFile);
         if(isEmptyDirectory( getPath(path) )) {
             try {

@@ -14,12 +14,8 @@ import java.nio.file.Path;
  */
 public interface StorageService {
 
-    String GetRepository();
-    void setRepository(String repository);
-
     void addFile(String path,MultipartFile file, String fileName) throws IOException, SystemException;
     void addFile(String path,InputStream is, String fileName) throws SystemException;
-
     void putFile(String path,MultipartFile file, String fileName) throws SystemException, IOException;
     void putFile(String path,InputStream is, String fileName) throws SystemException;
 
@@ -36,6 +32,4 @@ public interface StorageService {
     boolean fileExist(String path) throws SystemException;
     boolean folderExist(String path) throws SystemException;
     boolean hasDirectory(String path);
-
-
 }

@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author gabriel
@@ -52,12 +54,12 @@ public abstract class BaseStore implements Store{
 
     @Override
     public String getTempPath(String path) {
-        return getTempPath() + ( path.startsWith(StringConstants.SLASH) ? StringConstants.BLANK :StringConstants.SLASH ) +  path;
+        return Paths.get(getTempPath(),path).toString();
     }
 
     @Override
     public String getFileNameDir(String path, String fileName) {
-        return path + StringConstants.SLASH + fileName;
+        return Paths.get(path,fileName).toString();
     }
 
     @Override
@@ -71,7 +73,6 @@ public abstract class BaseStore implements Store{
     @Override
     public void addFile(String path, File file) throws SystemException {
         InputStream is;
-
         try {
             is = new FileInputStream(file);
             addFile(path, is);
@@ -90,7 +91,6 @@ public abstract class BaseStore implements Store{
     @Override
     public byte[] getFileAsBytes(String path) throws SystemException {
         byte[] bytes;
-
         try {
             InputStream is = getFileAsStream(path);
             bytes = IOUtils.toByteArray(is);
