@@ -2,11 +2,9 @@ package com.lagab.boilerplate.store.validator;
 
 import com.lagab.boilerplate.config.StorageProperties;
 import com.lagab.boilerplate.errors.SystemException;
-import com.lagab.boilerplate.store.errors.DuplicateFileException;
-import com.lagab.boilerplate.store.errors.FileNameException;
-import com.lagab.boilerplate.store.errors.InvalidContentTypeException;
-import com.lagab.boilerplate.store.errors.InvalidExtensionException;
+import com.lagab.boilerplate.store.errors.*;
 import com.lagab.boilerplate.utils.StringConstants;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,14 +48,17 @@ public class FileValidator {
         if ( !isSupportedExtension(file.getOriginalFilename()) ){
             throw  new InvalidExtensionException(FilenameUtils.getExtension(file.getOriginalFilename() ));
         }
-         if ( !isSupportedContentType(file.getContentType()) ){
-             throw  new InvalidContentTypeException(file.getContentType());
-         }
+        if ( !isSupportedContentType(file.getContentType()) ){
+            throw  new InvalidContentTypeException(file.getContentType());
+        }
+        if ( file.getSize() > storageProperties.getMaxSize() ){
+            throw new FileSizeException("The file (" + FileUtils.byteCountToDisplaySize(file.getSize()) + ") exceed the Maximum file-size ("+ FileUtils.byteCountToDisplaySize(storageProperties.getMaxSize()) +")");
+        }
     }
 
     public void validateFile(String path, MultipartFile file) throws SystemException{
         validateFile(file);
-        if( Files.exists(Paths.get(path + StringConstants.SLASH + file.getOriginalFilename())) ){
+        if( Files.exists(Paths.get( Paths.get(path,file.getOriginalFilename()) .toString())) ){
             throw new DuplicateFileException(file.getOriginalFilename());
         }
     }
