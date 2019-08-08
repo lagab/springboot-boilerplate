@@ -23,16 +23,16 @@ import java.util.Arrays;
  * @since 16/11/2018.
  */
 @Service
-public class FileSystemStorageService implements StorageService {
+public class DefaultStorageService implements StorageService {
 
-    protected final Logger log = LoggerFactory.getLogger(FileSystemStorageService.class);
+    protected final Logger log = LoggerFactory.getLogger(DefaultStorageService.class);
 
     private final FileValidator fileValidator;
 
     private  final Store store;
 
     @Autowired
-    public FileSystemStorageService(Store store,FileValidator fileValidator) {
+    public DefaultStorageService(Store store, FileValidator fileValidator) {
         this.store = store;
         this.fileValidator = fileValidator;
     }
