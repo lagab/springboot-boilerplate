@@ -1,0 +1,24 @@
+logging:
+  level:
+    ROOT: INFO
+spring:
+  profiles:
+    active: dev
+    include:
+      - swagger
+  jackson:
+    serialization:
+      indent-output: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://dev.kiabi.fr:3306/boilerplate
+    username: root
+    password:
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+  jpa:
+    show-sql: true
+  liquibase:
+    # Remove 'faker' if you do not want the sample data to be loaded automatically
+    contexts: dev, faker
