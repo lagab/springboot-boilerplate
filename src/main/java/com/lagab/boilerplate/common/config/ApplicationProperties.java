@@ -18,6 +18,7 @@ public class ApplicationProperties {
 
     private final ApplicationProperties.Mail mail = new ApplicationProperties.Mail();
     private final ApplicationProperties.Security security = new ApplicationProperties.Security();
+    private final ApplicationProperties.Credentials credentials = new ApplicationProperties.Credentials();
 
     @Getter
     @Setter
@@ -47,6 +48,13 @@ public class ApplicationProperties {
             }
 
         }
+    }
+
+    @Getter
+    @Setter
+    public static class Credentials {
+        private String username = "user";
+        private String password = "pass";
     }
 
 }

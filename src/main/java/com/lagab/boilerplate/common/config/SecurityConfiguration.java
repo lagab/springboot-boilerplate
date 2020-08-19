@@ -1,5 +1,7 @@
 package com.lagab.boilerplate.common.config;
 
+import javax.inject.Inject;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -14,12 +16,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import com.lagab.boilerplate.common.security.Authorities;
+import com.lagab.boilerplate.common.security.filter.BasicAuthFilter;
 import com.lagab.boilerplate.common.security.jwt.JWTConfigurer;
 import com.lagab.boilerplate.common.security.jwt.TokenProvider;
 
@@ -120,16 +124,17 @@ public class SecurityConfiguration {
         }
 
     }
+
     @Configuration
     @Order(1)
     public static class SystemSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+        @Inject
+        BasicAuthFilter basicAuthFilter;
+
         @Override
         public void configure(WebSecurity web) throws Exception {
-            web.ignoring()
-               .antMatchers(HttpMethod.OPTIONS, "/**")
-               .antMatchers("/swagger-ui/index.html")
-               .antMatchers("/test/**");
+            web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**").antMatchers("/swagger-ui/index.html").antMatchers("/test/**");
         }
 
         @Override
@@ -138,7 +143,7 @@ public class SecurityConfiguration {
             http
                     .csrf()
                     .disable()
-                    //.addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(basicAuthFilter, BasicAuthenticationFilter.class)
                     .exceptionHandling()
                     .and()
                     .headers()
