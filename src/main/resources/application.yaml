@@ -1,6 +1,8 @@
 spring:
   resources:
-    add-mappings: true
+    add-mappings: false
+  mvc:
+    throw-exception-if-no-handler-found: true
 # Application properties
 application:
   clientApp:
@@ -12,6 +14,9 @@ application:
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
+  credentials:
+    user: kiabi
+    pass: kiabi123
 management:
   endpoints:
     web:

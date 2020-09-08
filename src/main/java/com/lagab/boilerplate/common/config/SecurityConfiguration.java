@@ -1,12 +1,10 @@
 package com.lagab.boilerplate.common.config;
 
-import javax.inject.Inject;
-
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,26 +12,21 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import com.lagab.boilerplate.common.security.Authorities;
-import com.lagab.boilerplate.common.security.filter.BasicAuthFilter;
-import com.lagab.boilerplate.common.security.jwt.JWTConfigurer;
-import com.lagab.boilerplate.common.security.jwt.TokenProvider;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@Import(SecurityProblemSupport.class)
 public class SecurityConfiguration {
-    @Configuration
-    @Order(2)
-    public static class UserJwtSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    //@Configuration
+    //@Order(2)
+    /*public static class UserJwtSecurityConfiguration extends WebSecurityConfigurerAdapter {
         private final AuthenticationManagerBuilder authenticationManagerBuilder;
         //private final UserDetailsService userDetailsService;
         private final TokenProvider tokenProvider;
@@ -92,10 +85,10 @@ public class SecurityConfiguration {
                     .antMatchers("/account/reset-password/init").permitAll()
                     .antMatchers("/account/reset-password/finish").permitAll()
                     .antMatchers("/api/**").authenticated()
-                    .antMatchers("/actuator/health").permitAll()
-                    .antMatchers("/actuator/info").permitAll()
-                    .antMatchers("/actuator/prometheus").permitAll()
-                    .antMatchers("/actuator/**").hasAuthority(Authorities.ADMIN)
+                    .antMatchers("/management/health").permitAll()
+                    .antMatchers("/management/info").permitAll()
+                    .antMatchers("/management/prometheus").permitAll()
+                    .antMatchers("/management/**").hasAuthority(Authorities.ADMIN)
                     .and()
                     .httpBasic()
                     .and()
@@ -113,7 +106,7 @@ public class SecurityConfiguration {
             source.registerCorsConfiguration("/**", config);
             source.registerCorsConfiguration("/api/**", config);
             source.registerCorsConfiguration("/auth/**", config);
-            source.registerCorsConfiguration("/actuator/**", config);
+            source.registerCorsConfiguration("/management/**", config);
             source.registerCorsConfiguration("/v2/api-docs", config);
             source.registerCorsConfiguration("/browser/**", config);
             return new CorsFilter(source);
@@ -123,18 +116,39 @@ public class SecurityConfiguration {
             return new JWTConfigurer(tokenProvider);
         }
 
-    }
+    }*/
 
     @Configuration
     @Order(1)
     public static class SystemSecurityConfiguration extends WebSecurityConfigurerAdapter {
+        @Autowired
+        private SecurityProblemSupport problemSupport;
 
-        @Inject
-        BasicAuthFilter basicAuthFilter;
+        private ApplicationProperties applicationProperties;
+
+        SystemSecurityConfiguration(ApplicationProperties applicationProperties) {
+            this.applicationProperties = applicationProperties;
+        }
 
         @Override
         public void configure(WebSecurity web) throws Exception {
-            web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**").antMatchers("/swagger-ui/index.html").antMatchers("/test/**");
+            web.ignoring()
+               .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**")
+               .antMatchers(HttpMethod.OPTIONS, "/**")
+               .antMatchers("/test/**");
+        }
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+            auth.inMemoryAuthentication()
+                .withUser("user")
+                .password(encoder.encode("password"))
+                .roles(Authorities.USER)
+                .and()
+                .withUser(applicationProperties.getCredentials().getUsername())
+                .password(encoder.encode(applicationProperties.getCredentials().getPassword()))
+                .roles(Authorities.USER, Authorities.ADMIN);
         }
 
         @Override
@@ -143,8 +157,9 @@ public class SecurityConfiguration {
             http
                     .csrf()
                     .disable()
-                    .addFilterBefore(basicAuthFilter, BasicAuthenticationFilter.class)
                     .exceptionHandling()
+                    .authenticationEntryPoint(problemSupport)
+                    .accessDeniedHandler(problemSupport)
                     .and()
                     .headers()
                     .contentSecurityPolicy("default-src 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:")
@@ -160,6 +175,8 @@ public class SecurityConfiguration {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
                     .authorizeRequests()
+                    .antMatchers("/v2/api-docs").permitAll()
+                    .antMatchers("/swagger-ui.html").permitAll()
                     .antMatchers("/auth/authenticate").permitAll()
                     .antMatchers("/auth/register").permitAll()
                     .antMatchers("/auth/activate").permitAll()
@@ -168,19 +185,13 @@ public class SecurityConfiguration {
                     .antMatchers("/api/**").authenticated()
                     .antMatchers("/actuator/health").permitAll()
                     .antMatchers("/actuator/info").permitAll()
+                    .antMatchers("/actuator/loggers").hasAuthority(Authorities.ADMIN)
                     .antMatchers("/actuator/prometheus").permitAll()
-                    .antMatchers("/actuator/**").hasAuthority(Authorities.ADMIN)
+                    .antMatchers("/management/**").hasAuthority(Authorities.ADMIN)
                     .and()
                     .httpBasic();
             // @formatter:on
         }
     }
-
-
-
-
-
-
-
 
 }

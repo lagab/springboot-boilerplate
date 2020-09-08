@@ -31,6 +31,12 @@ public class ErrorVM implements Serializable {
         this.description = description;
     }
 
+    public ErrorVM(HttpStatus status, String message, String description) {
+        this.status = status;
+        this.message = message;
+        this.description = description;
+    }
+
     public void add(String objectName, String field, String message) {
         if (fieldErrors == null) {
             fieldErrors = new ArrayList<>();
