@@ -6,9 +6,6 @@ spring:
     active: dev
     include:
       - swagger
-  jackson:
-    serialization:
-      indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://dev.kiabi.fr:3306/boilerplate
@@ -22,3 +19,5 @@ spring:
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
+server:
+  port: 8890

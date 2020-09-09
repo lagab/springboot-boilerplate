@@ -4,11 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -121,6 +119,7 @@ public class SecurityConfiguration {
     @Configuration
     @Order(1)
     public static class SystemSecurityConfiguration extends WebSecurityConfigurerAdapter {
+        private static final String ROLE_ADMIN = "ADMIN";
         @Autowired
         private SecurityProblemSupport problemSupport;
 
@@ -131,24 +130,12 @@ public class SecurityConfiguration {
         }
 
         @Override
-        public void configure(WebSecurity web) throws Exception {
-            web.ignoring()
-               .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**")
-               .antMatchers(HttpMethod.OPTIONS, "/**")
-               .antMatchers("/test/**");
-        }
-
-        @Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {
             PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
             auth.inMemoryAuthentication()
-                .withUser("user")
-                .password(encoder.encode("password"))
-                .roles(Authorities.USER)
-                .and()
                 .withUser(applicationProperties.getCredentials().getUsername())
                 .password(encoder.encode(applicationProperties.getCredentials().getPassword()))
-                .roles(Authorities.USER, Authorities.ADMIN);
+                .roles("USER", ROLE_ADMIN);
         }
 
         @Override
@@ -177,16 +164,9 @@ public class SecurityConfiguration {
                     .authorizeRequests()
                     .antMatchers("/v2/api-docs").permitAll()
                     .antMatchers("/swagger-ui.html").permitAll()
-                    .antMatchers("/auth/authenticate").permitAll()
-                    .antMatchers("/auth/register").permitAll()
-                    .antMatchers("/auth/activate").permitAll()
-                    .antMatchers("/account/reset-password/init").permitAll()
-                    .antMatchers("/account/reset-password/finish").permitAll()
                     .antMatchers("/api/**").authenticated()
-                    .antMatchers("/actuator/health").permitAll()
-                    .antMatchers("/actuator/info").permitAll()
-                    .antMatchers("/actuator/loggers").hasAuthority(Authorities.ADMIN)
-                    .antMatchers("/actuator/prometheus").permitAll()
+                    .antMatchers("/management/health").permitAll()
+                    .antMatchers("/management/info").permitAll()
                     .antMatchers("/management/**").hasAuthority(Authorities.ADMIN)
                     .and()
                     .httpBasic();
