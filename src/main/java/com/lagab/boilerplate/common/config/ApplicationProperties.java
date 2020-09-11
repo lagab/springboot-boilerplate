@@ -19,6 +19,7 @@ public class ApplicationProperties {
     private final ApplicationProperties.Mail mail = new ApplicationProperties.Mail();
     private final ApplicationProperties.Security security = new ApplicationProperties.Security();
     private final ApplicationProperties.Credentials credentials = new ApplicationProperties.Credentials();
+    private final ApplicationProperties.Ehcache ehcache = new ApplicationProperties.Ehcache();
 
     @Getter
     @Setter
@@ -55,6 +56,13 @@ public class ApplicationProperties {
     public static class Credentials {
         private String username = "user";
         private String password = "pass";
+    }
+
+    @Getter
+    @Setter
+    public static class Ehcache {
+        private int timeToLiveSeconds = 3600;
+        private long maxEntries = 100L;
     }
 
 }

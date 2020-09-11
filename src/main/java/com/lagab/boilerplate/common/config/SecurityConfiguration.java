@@ -1,39 +1,53 @@
 package com.lagab.boilerplate.common.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import com.lagab.boilerplate.common.security.Authorities;
+import com.lagab.boilerplate.common.security.jwt.JWTConfigurer;
+import com.lagab.boilerplate.common.security.jwt.TokenProvider;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Import(SecurityProblemSupport.class)
 public class SecurityConfiguration {
-    //@Configuration
-    //@Order(2)
-    /*public static class UserJwtSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    @Configuration
+    @Order(2)
+    public static class UserJwtSecurityConfiguration extends WebSecurityConfigurerAdapter {
         private final AuthenticationManagerBuilder authenticationManagerBuilder;
-        //private final UserDetailsService userDetailsService;
+        private final UserDetailsService userDetailsService;
         private final TokenProvider tokenProvider;
-        //private final SecurityProblemSupport problemSupport;
+        private final SecurityProblemSupport problemSupport;
 
-        public UserJwtSecurityConfiguration(AuthenticationManagerBuilder authenticationManagerBuilder, TokenProvider tokenProvider) {
+        public UserJwtSecurityConfiguration(AuthenticationManagerBuilder authenticationManagerBuilder, UserDetailsService userDetailsService,
+                TokenProvider tokenProvider, SecurityProblemSupport problemSupport) {
             this.authenticationManagerBuilder = authenticationManagerBuilder;
-            //this.userDetailsService = userDetailsService;
+            this.userDetailsService = userDetailsService;
             this.tokenProvider = tokenProvider;
+            this.problemSupport = problemSupport;
         }
 
         @Override
@@ -41,16 +55,15 @@ public class SecurityConfiguration {
         public AuthenticationManager authenticationManagerBean() throws Exception {
             return super.authenticationManagerBean();
         }
+
         @Bean
         public PasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder();
         }
+
         @Override
         public void configure(WebSecurity web) throws Exception {
-            web.ignoring()
-               .antMatchers(HttpMethod.OPTIONS, "/**")
-               .antMatchers("/swagger-ui/index.html")
-               .antMatchers("/test/**");
+            web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**").antMatchers("/swagger-ui/index.html").antMatchers("/test/**");
         }
 
         @Override
@@ -59,9 +72,11 @@ public class SecurityConfiguration {
             http
                     .csrf()
                     .disable()
-                    //.addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)
-                    .addFilter(corsFilter())
+                    .addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)
+                    //.addFilter(corsFilter())
                     .exceptionHandling()
+                    .authenticationEntryPoint(problemSupport)
+                    .accessDeniedHandler(problemSupport)
                     .and()
                     .headers()
                     .contentSecurityPolicy("default-src 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:")
@@ -77,16 +92,15 @@ public class SecurityConfiguration {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
                     .authorizeRequests()
-                    .antMatchers("/auth/authenticate").permitAll()
-                    .antMatchers("/auth/register").permitAll()
-                    .antMatchers("/auth/activate").permitAll()
-                    .antMatchers("/account/reset-password/init").permitAll()
-                    .antMatchers("/account/reset-password/finish").permitAll()
-                    .antMatchers("/api/**").authenticated()
+                    .antMatchers("/api/authenticate").permitAll()
+                    .antMatchers("/api/register").permitAll()
+                    .antMatchers("/api/activate").permitAll()
+                    .antMatchers("/api/account/reset-password/init").permitAll()
+                    .antMatchers("/api/account/reset-password/finish").permitAll()
                     .antMatchers("/management/health").permitAll()
                     .antMatchers("/management/info").permitAll()
-                    .antMatchers("/management/prometheus").permitAll()
                     .antMatchers("/management/**").hasAuthority(Authorities.ADMIN)
+                    .antMatchers("/api/**").authenticated()
                     .and()
                     .httpBasic()
                     .and()
@@ -113,11 +127,10 @@ public class SecurityConfiguration {
         private JWTConfigurer securityConfigurerAdapter() {
             return new JWTConfigurer(tokenProvider);
         }
+    }
 
-    }*/
-
-    @Configuration
-    @Order(1)
+    //@Configuration
+    //@Order(1)
     public static class SystemSecurityConfiguration extends WebSecurityConfigurerAdapter {
         private static final String ROLE_ADMIN = "ADMIN";
         @Autowired
