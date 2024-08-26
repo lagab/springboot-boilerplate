@@ -31,7 +31,7 @@
         <liquibase.version>3.5.5</liquibase.version>
         <liquibase-hibernate5.version>3.6</liquibase-hibernate5.version>
         <!-- swagger -->
-        <springfox-swagger.version>2.9.2</springfox-swagger.version>
+        <springfox-swagger.version>2.10.0</springfox-swagger.version>
         <oauth.version>2.3.3.RELEASE</oauth.version>
         <jwt.version>1.0.9.RELEASE</jwt.version>
         <jjwt.version>0.9.1</jjwt.version>
